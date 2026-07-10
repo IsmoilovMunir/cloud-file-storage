@@ -1,7 +1,10 @@
 package com.ismoilov.cloud_file_storage.service;
 
 import com.ismoilov.cloud_file_storage.config.MinioConfig;
+import com.ismoilov.cloud_file_storage.exception.FileNotFoundException;
+import com.ismoilov.cloud_file_storage.exception.StorageException;
 import io.minio.*;
+import io.minio.errors.ErrorResponseException;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +32,7 @@ public class MinioService {
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to upload file: " + fileName, e);
+            throw new StorageException("Failed to upload file: " + fileName);
         }
 
     }
@@ -50,7 +53,7 @@ public class MinioService {
             }
             return fileNames;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to list objects", e);
+            throw new StorageException("Failed to list objects");
         }
     }
 
@@ -63,7 +66,7 @@ public class MinioService {
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to delete file: " + fileName, e);
+            throw new StorageException("Failed to delete file: " + fileName);
         }
     }
     public InputStream downloadFile(String fileName) {
@@ -75,8 +78,13 @@ public class MinioService {
                             .build()
             );
 
-        }catch (Exception e){
-            throw new RuntimeException("Failed to download file: " + fileName, e);
+        }catch (ErrorResponseException e) {
+            if (e.errorResponse().code().equals("NoSuchKey")) {
+                throw new FileNotFoundException("File not found: " + fileName);
+            }
+            throw new StorageException("Failed to download file: " + fileName);
+        } catch (Exception e) {
+            throw new StorageException("Failed to download file: " + fileName);
         }
     }
     public void createFolder( String folderName){
@@ -90,7 +98,7 @@ public class MinioService {
 
             );
         }catch (Exception e){
-            throw new RuntimeException("Failed to create folder: " + folderName, e);
+            throw new StorageException("Failed to create folder: " + folderName);
         }
     }
 
@@ -115,7 +123,7 @@ public class MinioService {
             );
 
         }catch (Exception e){
-            throw new RuntimeException("Failed to move file: " + sourcePath, e);
+            throw new StorageException("Failed to move file: " + sourcePath);
         }
     }
 
@@ -127,7 +135,5 @@ public class MinioService {
             }
         }
         return fileNames;
-
     }
-
 }

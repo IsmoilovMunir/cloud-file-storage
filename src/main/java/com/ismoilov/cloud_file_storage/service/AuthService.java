@@ -8,6 +8,10 @@ import com.ismoilov.cloud_file_storage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class AuthService {
@@ -24,4 +28,6 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         return userRepository.save(user);
     }
+
+
 }
