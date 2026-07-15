@@ -8,11 +8,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Tag(name = "Files", description = "File management API")
@@ -27,7 +31,9 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<Void> upload(@RequestParam("file") MultipartFile file, @RequestParam("path") String fileName) {
         minioService.uploadFile(file, fileName);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + URLEncoder.encode(fileName, StandardCharsets.UTF_8))
+                .build();
     }
 
     @Operation(summary = "listFiles file", description = "listFiles file to storage")
@@ -48,8 +54,10 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam(value = "path") String fileName) {
         InputStream inputStream = minioService.downloadFile(fileName);
+        String contentType = URLConnection.guessContentTypeFromName(fileName);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
                 .body(new InputStreamResource(inputStream));
     }
 
