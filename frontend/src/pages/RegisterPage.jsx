@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { register } from '../api/auth'
-import { useNavigation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 function RegisterPage() {
     const [username, setUsername] = useState('')
 
     const [password, setPassword] = useState('')
 
-    const navigation = useNavigation()
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
