@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.ismoilov</groupId>
-	<artifactId>cloud-file-storage</artifactId>
+	<artifactId>beckend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
