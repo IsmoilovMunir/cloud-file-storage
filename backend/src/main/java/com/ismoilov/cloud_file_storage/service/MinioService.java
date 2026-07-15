@@ -127,9 +127,9 @@ public class MinioService {
         }
     }
 
-    public List<String> searchFile(String query){
+    public List<String> searchFile(String query,  String userPrefix){
         List<String> fileNames = new ArrayList<>();
-        for(String fileName : listFiles("")){
+        for(String fileName : listFiles(userPrefix)){
             if(fileName.contains(query)) {
                 fileNames.add(fileName);
             }
